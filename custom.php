@@ -15,7 +15,7 @@
 * Gets Attachment ID from URL
 *
 *--------------------------------------------------------------------------------------*/
-function get_attachment_id( $url ) {
+function neat_attachment_id( $url ) {
 	$home = home_url();
 	if(strpos($url, $home) !== false) {
 		$attachment_id = 0;
@@ -56,7 +56,7 @@ function get_attachment_id( $url ) {
 * Adds alt tags to images of the post
 *
 *--------------------------------------------------------------------------------------*/
-function add_alt_tags($content) {
+function neat_alt_tags($content) {
         global $post;
         preg_match_all('/<img (.*?)\/>/', $content, $images);
         if(!is_null($images))
@@ -65,7 +65,7 @@ function add_alt_tags($content) {
                 foreach($images[0] as $index => $value)
                 {
                     preg_match( '@src="([^"]+)"@' , $images[1][$i] , $match );
-                    $imid = get_post_meta(get_attachment_id(str_replace('src=', '', str_replace('"', '', $match[1]))), '_wp_attachment_image_alt', true );
+                    $imid = get_post_meta(neat_attachment_id(str_replace('src=', '', str_replace('"', '', $match[1]))), '_wp_attachment_image_alt', true );
                     
                     if (strpos($images[0][$i], 'alt=""') !== false || strpos($images[0][$i], 'alt=""') !== false || strpos($images[0][$i], "alt=''") !== false) {
                         $pattern ='~(<img.*? alt=")("[^>]*>)~i';
@@ -83,32 +83,34 @@ function add_alt_tags($content) {
         return $content;
 }
 
-add_filter('the_content', 'add_alt_tags', 99999);
+add_filter('the_content', 'neat_alt_tags', 99999);
 
 /*--------------------------------------------------------------------------------------
 *
 * Adds alt tags functionality to ACF custom fields
 *
 *--------------------------------------------------------------------------------------*/
-function acf_add_alt_tags($value, $post_id, $field ) {
+function neat_acf_alt_tags($value, $post_id, $field ) {
     // run the_content filter on all textarea values
     $value = apply_filters('the_content',$value);
     return $value;
 }
- add_filter('acf/format_value/type=wysiwyg', 'acf_add_alt_tags', 10, 3);
-function add_query_vars_filter( $vars ){
+
+add_filter('acf/format_value/type=wysiwyg', 'neat_acf_alt_tags', 10, 3);
+ 
+function neat_add_query_vars_filter( $vars ){
   $vars[] = "hide";
   return $vars;
 }
 
-add_filter( 'query_vars', 'add_query_vars_filter' );
+add_filter( 'query_vars', 'neat_add_query_vars_filter' );
 
 /*--------------------------------------------------------------------------------------
 *
 * Distinguishes all images with empty Alt tags
 *
 *--------------------------------------------------------------------------------------*/
-function no_alt_admin_notice($attachement_id) {
+function neat_alt_admin_notice($attachement_id) {
 	$aposts = array(  
 	    'post_type' => 'attachment',  
 	    'post_mime_type' =>array(  
@@ -140,7 +142,7 @@ function no_alt_admin_notice($attachement_id) {
 	}
 	$ic = count($co);
 	if( $ic >= 1 ){
-		$full_link = esc_url( home_url( '/' ) ).'wp-admin/upload.php?mode=list&orderby=alt_text&order=asc&hide=all';
+		$full_link = admin_url().'upload.php?mode=list&orderby=alt_text&order=asc&hide=all';
 		if ( $ic == 1 ){
 			$count = '1 image';
 		} else {
@@ -154,28 +156,28 @@ function no_alt_admin_notice($attachement_id) {
 	echo $nocount;
 	
 }
-function no_alt_hook_admin_notice() {
-    add_action( 'admin_notices', 'no_alt_admin_notice' );
+function neat_alt_hook_admin_notice() {
+    add_action( 'admin_notices', 'neat_alt_admin_notice' );
 }
 
-add_action( 'admin_init', 'no_alt_hook_admin_notice' );
+add_action( 'admin_init', 'neat_alt_hook_admin_notice' );
  
 /*--------------------------------------------------------------------------------------
 *
 * Adds "No Alt Tag" sort function to all attachments
 *
 *--------------------------------------------------------------------------------------*/
-add_filter( 'manage_upload_columns', 'add_column_alt_text' );
-add_action( 'manage_media_custom_column', 'column_alt_text', 10, 2 );
-add_filter( 'manage_upload_sortable_columns', 'add_column_alt_text_sortable_columns' );
-add_filter( 'posts_clauses', 'alt_text_sort_columns_by', 1, 2 );
+add_filter( 'manage_upload_columns', 'neat_add_column_alt_text' );
+add_action( 'manage_media_custom_column', 'neat_column_alt_text', 10, 2 );
+add_filter( 'manage_upload_sortable_columns', 'neat_add_column_alt_text_sortable_columns' );
+add_filter( 'posts_clauses', 'neat_alt_text_sort_columns_by', 1, 2 );
 
-function add_column_alt_text( $columns ) { 
+function neat_add_column_alt_text( $columns ) { 
 	$columns['alt_text_column'] = 'Alt Text';
 	return $columns;
 }
 
-function column_alt_text( $column_name, $media_item ) {
+function neat_column_alt_text( $column_name, $media_item ) {
 	if ( 'alt_text_column' != $column_name || !wp_attachment_is_image( $media_item ) ) {
 		return;
 	}
@@ -185,7 +187,7 @@ function column_alt_text( $column_name, $media_item ) {
 }
 
 // Make Sortable
-function add_column_alt_text_sortable_columns( $columns ) {
+function neat_add_column_alt_text_sortable_columns( $columns ) {
 	
 	$columns[ 'alt_text_column' ] = 'alt_text';
 	return $columns;
@@ -193,7 +195,7 @@ function add_column_alt_text_sortable_columns( $columns ) {
 }
 
 // Sort by Alt text
-function alt_text_sort_columns_by($pieces, $query ) {  
+function neat_alt_text_sort_columns_by($pieces, $query ) {  
    
    global $wpdb;
    
