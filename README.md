@@ -1,6 +1,6 @@
 # NE Alt Tags
 
-NE Alt Tags is a plugin that allows the user to easily view images throughout your site that doesn't have alternative text assigned to it and update it throughout your whole website.
+NE Alt Tags is a Wordpress plugin that allows the user to easily view images throughout your site that doesn't have alternative text assigned to it and update it throughout your whole website.
 
 If there are any images that do not have an alt tag, then it will prompt a message in the admin letting you know how many images there are that don't have alt tags. 
 
